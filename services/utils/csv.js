@@ -1,14 +1,14 @@
-const csv = require('csvtojson');
 const fs = require('fs');
+const csv2json = require('./dependencies/csv2json');
+
+const json2csv = require('./dependencies/json2csv');
 
 module.exports.read = (file) => {
-  const fileRows = [];
+  const data = fs.readFileSync(file.path, { encoding: 'utf8' });
+  fs.unlinkSync(file.path);
+  return csv2json(data, {parseNumbers: false})
+};
 
-  csv()
-    .fromFile(file.path)
-    .then((object) => {
-      console.log(object);
-      fs.unlinkSync(file.path);
-      return object;
-    });
+module.exports.tocsv = (json) => {
+  return json2csv(json);
 };
