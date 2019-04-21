@@ -8,6 +8,7 @@ module.exports.read = (file) => {
     .fromFile(file.path)
     .then((object) => {
       console.log(object);
+      fs.unlinkSync(file.path);
       return object;
     });
 };
