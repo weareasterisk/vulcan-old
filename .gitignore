@@ -1,6 +1,9 @@
 # idea
 .idea
 
+# multer
+uploads/
+
 # Logs
 logs
 *.log
