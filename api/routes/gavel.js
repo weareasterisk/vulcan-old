@@ -1,5 +1,6 @@
 const express = require('express');
 const multer = require('multer');
+const fs = require('fs');
 const { read, tocsv } = require('../../services/utils/csv');
 const { construct } = require('../../services/utils/gavel');
 
@@ -13,12 +14,11 @@ const upload = multer({
 
 /* GET users listing. */
 router.post('/csv', upload.single('file'), async (req, res, next) => {
+  const { file } = req;
   try {
-    const { file } = req;
+    const data = await read(file);
 
     const parameters = JSON.parse(req.body.parameters);
-
-    const data = await read(file);
     console.log(data);
 
     const gavelData = await construct(data, parameters);
@@ -27,6 +27,7 @@ router.post('/csv', upload.single('file'), async (req, res, next) => {
     console.log(JSON.stringify(gavelData));
   }
   catch (error) {
+    fs.unlinkSync(file.path);
     console.error(error);
     res.status(400).send(error)
   }
