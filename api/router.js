@@ -1,8 +1,8 @@
 const express = require('express');
-const gavel = require('./routes/gavel');
+const devpost = require('./routes/devpost');
 
 const router = express.Router();
 
-router.use('/gavel', gavel);
+router.use('/devpost', devpost);
 
 module.exports = router;
