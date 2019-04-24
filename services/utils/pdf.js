@@ -1,6 +1,14 @@
 const fs = require('fs');
-const pdf = require('jspdf');
+
+const jsPDF = require('jspdf').jsPDF();
+require('jspdf-autotable');
+
 const _ = require('lodash');
+
+jsPDF.autoTableSetDefaults({
+  theme: 'striped',
+  overflow: 'linebreak'
+});
 
 /*
 * data: {[
@@ -9,11 +17,38 @@ const _ = require('lodash');
 * */
 module.exports.sponsorChallenges = async(data) => {
   const documents = [];
-  const challenges = countChallengesInAll(_.map(data, 'challenges'));
-  _.forEach(data, async (datum) => {
-
+  const challenges = await countChallengesInAll(_.map(data, 'challenges'));
+  _.forEach(challenges, (challenge) => {
+    const projects = [];
+    const pdf = new jsPDF();
+    pdf.setFontSize(18);
+    pdf.text(
+      challenge,
+      10,
+      10,
+      {align: "center"});
+    pdf.setFontSize(14);
+    _.forEach(data, (project) => {
+      const pc = project.challenges;
+      if (_.includes(pc, challenge))
+        projects.push(project);
+    });
+    pdf.autoTable({
+      columns: [{
+        header: 'Project Name',
+        dataKey: 'name'
+      }, {
+        header: 'Location',
+        dataKey: 'location'
+      }, {
+        header: 'Description',
+        dataKey: 'description'
+      }],
+      body: projects
+    });
+    documents.push(pdf);
   });
-
+  return await documents;
 };
 
 const countChallengesInAll = (challengesAll) => {
