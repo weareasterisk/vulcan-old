@@ -11,8 +11,9 @@ module.exports.construct = (projects, parameters) => {
       description += _.trim(project[descriptionParameter]) + "\n***\n";
     });
     accumulator.push({
-      title: project["Submission Title"],
+      name: project["Submission Title"],
       location: project[locationParameter],
+      /* subtract 7 chars to remove extra "\n***\n" */
       description: _.trim(description.substr(0,description.length-7))
     })
   });
