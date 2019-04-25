@@ -6,7 +6,7 @@ const json2csv = require('./dependencies/json2csv');
 
 module.exports.read = (file) => {
   const data = fs.readFileSync(file.path, {encoding: 'utf8'});
-  console.log(data);
+  fs.unlinkSync(file.path);
   return csv2json(data);
 };
 
