@@ -25,7 +25,11 @@ router.post('/csv', upload.single('file'), async (req, res, next) => {
     res.send(tocsv(gavelData));
   }
   catch (error) {
-    fs.unlinkSync(file.path);
+    try {
+      fs.unlinkSync(file.path);
+    } catch(e) {
+
+    }
     // eslint-disable-next-line no-console
     console.error(error);
     res.status(400).send(error)
