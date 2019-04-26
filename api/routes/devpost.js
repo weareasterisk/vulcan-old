@@ -58,8 +58,11 @@ router.post('/challenges', upload.single('file'), async (req, res, next) => {
       const path = {};
       const filename = (_.trim(_.toLower(_.replace(challenge, /\s+/g, '-'))));
       const fileending = ".pdf";
+      // Random text to ensure that there are no duplicate name errors
+      const nonBlockingText = (Math.round((new Date()).getTime())) + uuidv4();
+
       path.name = filename + fileending;
-      path.path = './api/pdfstorage/' + filename + (Math.round((new Date()).getTime())) + uuidv4() + fileending;
+      path.path = './api/pdfstorage/' + filename + nonBlockingText + fileending;
       pdf.pipe(
         fs.createWriteStream(path.path)
       );

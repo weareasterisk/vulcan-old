@@ -48,9 +48,9 @@ module.exports.sponsorChallenges = (data) => {
       footer: {
         stack: [
           {
-            text: (currentPage, pageCount) => {
+            text: ((currentPage, pageCount) => {
               return currentPage.toString() + ' of ' + pageCount;
-            }
+            })
           }
         ],
         margin: [20]
