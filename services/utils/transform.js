@@ -1,5 +1,9 @@
 const _ = require('lodash');
 
+
+// {"description": ["Describe Your Hack In 140 Characters. Target This To A 5th Grader.","Describe Your Hack In 140 Characters. Target This To A Peer.","Describe Your Hack In 140 Characters. Target This To A Senior Engineer With Years Of Experience."],
+//   "location": "What's Your Table Number? Format Is Floor #, Section #, Row/Table #S, I.E. 1 1 A1."};
+
 module.exports.constructGavel = (projects, parameters) => {
   let accumulator = [];
   const descriptionParameters = parameters.description;
@@ -28,7 +32,7 @@ module.exports.constructPdf = (projects, parameters) => {
   _.forEach(projects, (project) => {
     let description = "";
     _.forEach(descriptionParameters, (descriptionParameter) => {
-      description += _.trim(project[descriptionParameter])+"******";
+      description += _.trim(project[descriptionParameter])+"\n\n";
     });
     accumulator.push({
       name: project["Submission Title"],
@@ -39,3 +43,4 @@ module.exports.constructPdf = (projects, parameters) => {
   });
   return accumulator;
 };
+

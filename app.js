@@ -7,6 +7,7 @@ const logger = require('morgan');
 const sassMiddleware = require('node-sass-middleware');
 const helmet = require('helmet');
 const compression = require('compression');
+const zip = require('express-easy-zip');
 
 // Router definitions
 const apiRouter = require('./api/router');
@@ -19,6 +20,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 // Middlewares
+app.use(zip());
 app.use(helmet());
 app.use(compression());
 app.use(logger('dev'));

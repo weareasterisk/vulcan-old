@@ -1,18 +1,32 @@
 const fs = require('fs');
 const _ = require('lodash');
-const PdfTable = require('voilab-pdf-table');
-const PdfDocument = require('pdfkit');
+const PdfPrinter = require('pdfmake');
+
+/*
+* * Paths are based on the root directory of project
+* */
+
+const fonts = {
+  Roboto: {
+    normal: './public/fonts/roboto/Roboto-Regular.ttf',
+    bold: './public/fonts/roboto/Roboto-Medium.ttf',
+    italics: './public/fonts/roboto/Roboto-Italic.ttf',
+    bolditalics: './public/fonts/roboto/Roboto-MediumItalic.ttf'
+  }
+};
+
+const image = './public/image';
+
+const printer = new PdfPrinter(fonts);
 
 /*
 * data: {[
 * name, location, description, challenges: [ challenge1, challenge2, challenge3 ]
 * ], }
 * */
-module.exports.sponsorChallenges = async(data, rawData) => {
+module.exports.sponsorChallenges = (data) => {
   let documents = [];
-  console.log(data);
-  const challenges = await countChallengesInAll(_.map(data, 'challenges'));
-  console.log(challenges);
+  const challenges = countChallengesInAll(_.map(data, 'challenges'));
   _.forEach(challenges, (challenge) => {
     if(!challenge || challenge.isEmpty)
       return;
@@ -24,59 +38,66 @@ module.exports.sponsorChallenges = async(data, rawData) => {
         projects.push(project);
     });
 
-    console.log(projects);
+    const sortedProjects = _.sortBy(projects, "location");
 
-    //const pdf = new jsPDF();
-    const pdf = new PdfDocument({
-      autoFirstPage: false
-    }),
-      table = new PdfTable(pdf, {
-        bottomMargin: 30
-      });
-    table
-      .addPlugin(new (require('voilab-pdf-table/plugins/fitcolumn'))({
-        column: 'description'
-      }))
-      .setColumnsDefaults({
-        headerBorder: 'B',
-        align: 'right'
-      })
-      .addColumns([
+    const pdfData = transformToPdfKitData(sortedProjects);
+
+    const document = printer.createPdfKitDocument({
+      pageMargins: [30, 30, 30, 40],
+      orientation: 'portrait',
+      footer: {
+        stack: [
+          {
+            text: (currentPage, pageCount) => {
+              return currentPage.toString() + ' of ' + pageCount;
+            }
+          }
+        ],
+        margin: [20]
+      },
+      header: {
+        stack: [
+          {
+            image: './public/images/logo-black-min.jpg', fit: [50,200]
+          }
+        ],
+        margin: [15, 15]
+      },
+      content: [
         {
-          id: 'name',
-          header: 'Name',
-          align: 'left'
+          text: challenge,
+          style: "header"
         },
         {
-          id: 'location',
-          header: 'Location',
-          align: 'left'
-        },
-        {
-          id: 'description',
-          header: 'Description',
-          align: 'left'
-        },
-        {
-          id: 'challenges',
-          header: 'Challenge',
-          align: 'left'
+          layout: 'lightHorizontalLines',
+          table: {
+            headerRows: 1,
+            dontBreakRows: true,
+            widths: ['*', '*', 'auto'],
+
+            body: pdfData
+          }
         }
-      ])
-      .onPageAdded((tb) => {
-        tb.addHeader();
-      });
-    pdf.addPage();
-
-    console.log(projects);
-
-    table.addBody([
-      {name: "nama asd asd", location: "place asdasd", description: "deascraipas da sdasd", challenges: "hackdfw asd chalc"}
-    ]);
-
-    documents.push({challenge: challenge, pdf: pdf});
+      ],
+      defaultStyle: {
+        font: 'Roboto'
+      },
+      styles: {
+        tableHeader: {
+          bold: true,
+          fontSize: 13,
+          color: 'black'
+        },
+        header: {
+          fontSize: 15,
+          bold: true,
+          alignment: 'center'
+        },
+      }
+    });
+    documents.push({challenge: challenge, pdf: document});
   });
-  return await documents;
+  return documents;
 };
 
 const countChallengesInAll = (challengesAll) => {
@@ -86,4 +107,23 @@ const countChallengesInAll = (challengesAll) => {
       accumulator.push(challenges);
   });
   return accumulator;
+};
+
+const transformToPdfKitData = (projects) => {
+  let output = [];
+  let header = [
+    {text: "Name", style: "tableHeader"},
+    {text: "Location", style: "tableHeader"},
+    {text: "Description(s)", style: "tableHeader"}
+  ];
+
+  output.push(header);
+  _.forEach(projects, (project) => {
+    let transProject = [];
+    transProject.push(project.name);
+    transProject.push(project.location);
+    transProject.push(project.description);
+    output.push(transProject);
+  });
+  return output;
 };
