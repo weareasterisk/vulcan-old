@@ -4,6 +4,9 @@
 # multer
 uploads/
 
+# pdfstorage
+api/pdfstorage/*.*
+
 # Logs
 logs
 *.log
