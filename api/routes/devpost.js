@@ -4,9 +4,9 @@ const fs = require('fs');
 const _ = require('lodash');
 const uuidv4 = require('uuid/v4');
 
-const { read, tocsv } = require('../../utils/csv');
-const { constructGavel, constructPdf } = require('../../utils/transform');
-const { sponsorChallenges } = require('../../utils/pdf');
+const { read, tocsv } = require('../../utils/pdf/csv');
+const { constructGavel, constructPdf } = require('../../utils/pdf/transform');
+const { sponsorChallenges } = require('../../utils/pdf/pdf');
 
 const router = express.Router();
 

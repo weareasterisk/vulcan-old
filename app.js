@@ -8,6 +8,7 @@ const sassMiddleware = require('node-sass-middleware');
 const helmet = require('helmet');
 const compression = require('compression');
 const zip = require('express-easy-zip');
+const winston = require('./utils/logger');
 
 // Router definitions
 const apiRouter = require('./api/router');
@@ -23,7 +24,7 @@ app.set('view engine', 'pug');
 app.use(zip());
 app.use(helmet());
 app.use(compression());
-app.use(logger('dev'));
+app.use(logger('dev', { stream: winston.stream }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -49,6 +50,8 @@ app.use((err, req, res, next) => {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
 
   // render the error page
   res.status(err.status || 500);
