@@ -1,11 +1,12 @@
 const express = require('express');
 const multer = require('multer');
 const fs = require('fs');
-const { read, tocsv } = require('../../services/utils/csv');
 const _ = require('lodash');
-const { constructGavel, constructPdf } = require('../../services/utils/transform');
-const { sponsorChallenges } = require('../../services/utils/pdf');
 const uuidv4 = require('uuid/v4');
+
+const { read, tocsv } = require('../../utils/csv');
+const { constructGavel, constructPdf } = require('../../utils/transform');
+const { sponsorChallenges } = require('../../utils/pdf');
 
 const router = express.Router();
 
