@@ -1,8 +1,8 @@
 const express = require('express');
 const multer = require('multer');
+const uuidv4 = require('uuid/v4');
 const fs = require('fs');
 const _ = require('lodash');
-const uuidv4 = require('uuid/v4');
 
 const { read, tocsv } = require('../../utils/pdf/csv');
 const { constructGavel, constructPdf } = require('../../utils/pdf/transform');
@@ -16,7 +16,8 @@ const upload = multer({
   dest: 'uploads/'
 });
 
-/* GET users listing. */
+// Requires that the "sort by opt-in prize" be UNCHECKED.
+/* Derive gavel data from devpost CSV */
 router.post('/gavel', upload.single('file'), async (req, res, next) => {
   const { file } = req;
   try {
@@ -35,12 +36,13 @@ router.post('/gavel', upload.single('file'), async (req, res, next) => {
     try {
       fs.unlinkSync(file.path);
     } catch(e) {
-
+      // eslint-disable-next-line no-console
+      console.error(e);
     }
   }
 });
 
-// Requires that the "sort by opt-in" prize be checked.
+// Requires that the "sort by opt-in prize" be CHECKED.
 router.post('/challenges', upload.single('file'), async (req, res, next) => {
   const { file } = req;
   try {
