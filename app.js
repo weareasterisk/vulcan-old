@@ -1,4 +1,3 @@
-require('dotenv').config();
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
@@ -9,6 +8,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const zip = require('express-easy-zip');
 const winston = require('./utils/logger');
+const config = require('./config');
 
 // Router definitions
 const apiRouter = require('./api/router');
@@ -49,7 +49,7 @@ app.use(function(req, res, next) {
 app.use((err, req, res, next) => {
   // set locals, only providing error in development
   res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.error = config.env === 'development' ? err : {};
 
   winston.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
 
